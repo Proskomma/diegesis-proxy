@@ -1,3 +1,14 @@
+const path = require('path');
+const fse =require('fs-extra');
+
+if (process.argv.length > 3 || process.argv.length < 2) {
+  console.log('USAGE: node server [<configPath>]');
+  process.exit(1);
+}
+const configPath = path.resolve(process.argv[2] || 'default_config.json');
+const diegesisConfig = fse.readJsonSync(configPath);
+diegesisConfig.configPath = configPath;
+
 // Listen on a specific host via the HOST environment variable
 var host = process.env.HOST || '0.0.0.0';
 // Listen on a specific port via the PORT environment variable
@@ -21,6 +32,7 @@ var checkRateLimit = require('./lib/rate-limit')(process.env.CORSANYWHERE_RATELI
 
 var cors_proxy = require('./lib/cors-anywhere');
 cors_proxy.createServer({
+  diegesisConfig,
   originBlacklist: originBlacklist,
   originWhitelist: originWhitelist,
   requireHeader: ['origin', 'x-requested-with'],
@@ -45,5 +57,5 @@ cors_proxy.createServer({
     xfwd: false,
   },
 }).listen(port, host, function() {
-  console.log('Running Diegesis Proxy on ' + host + ':' + port);
+  console.log('Running Diegesis Proxy on ' + host + ':' + port + '\n   Using config file ' + configPath);
 });
