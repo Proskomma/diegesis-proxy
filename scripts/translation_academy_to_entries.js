@@ -12,67 +12,69 @@ const itemTokens =
             }),
         );
 
-const entryRecord = entry => ({
-    'bs': {
-        'type': 'scope',
-        'subType': 'start',
-        'payload': `kvPrimary/${entry.key}`,
-    },
-    'bg': [],
-    'os': [],
-    'is': [
-        {
+const entryRecord = entry => {
+    return {
+        'bs': {
             'type': 'scope',
             'subType': 'start',
-            'payload': 'kvField/title',
+            'payload': `kvPrimary/${entry.key}`,
         },
-        {
-            'type': 'scope',
-            'subType': 'start',
-            'payload': 'kvField/subTitle',
-        },
-        {
-            'type': 'scope',
-            'subType': 'start',
-            'payload': 'kvField/content',
-        },
-    ],
-    'items': [
-        {
-            'type': 'scope',
-            'subType': 'start',
-            'payload': 'kvField/title',
-        },
-        ...itemTokens(entry.title),
-        {
-            'type': 'scope',
-            'subType': 'end',
-            'payload': 'kvField/title',
-        },
-        {
-            'type': 'scope',
-            'subType': 'start',
-            'payload': 'kvField/subTitle',
-        },
-        ...itemTokens(entry.subTitle),
-        {
-            'type': 'scope',
-            'subType': 'end',
-            'payload': 'kvField/subTitle',
-        },
-        {
-            'type': 'scope',
-            'subType': 'start',
-            'payload': 'kvField/content',
-        },
-        ...itemTokens(entry.content),
-        {
-            'type': 'scope',
-            'subType': 'end',
-            'payload': 'kvField/content',
-        },
-    ],
-});
+        'bg': [],
+        'os': [],
+        'is': [
+            {
+                'type': 'scope',
+                'subType': 'start',
+                'payload': 'kvField/title',
+            },
+            {
+                'type': 'scope',
+                'subType': 'start',
+                'payload': 'kvField/subTitle',
+            },
+            {
+                'type': 'scope',
+                'subType': 'start',
+                'payload': 'kvField/content',
+            },
+        ],
+        'items': [
+            {
+                'type': 'scope',
+                'subType': 'start',
+                'payload': 'kvField/title',
+            },
+            ...itemTokens(entry.title),
+            {
+                'type': 'scope',
+                'subType': 'end',
+                'payload': 'kvField/title',
+            },
+            {
+                'type': 'scope',
+                'subType': 'start',
+                'payload': 'kvField/subTitle',
+            },
+            ...itemTokens(entry.subTitle),
+            {
+                'type': 'scope',
+                'subType': 'end',
+                'payload': 'kvField/subTitle',
+            },
+            {
+                'type': 'scope',
+                'subType': 'start',
+                'payload': 'kvField/content',
+            },
+            ...itemTokens(entry.content),
+            {
+                'type': 'scope',
+                'subType': 'end',
+                'payload': 'kvField/content',
+            },
+        ],
+    };
+};
 
 if (process.argv.length !== 3) {
     console.log('USAGE: node translation_academy_to_entries <taDirPath>');
@@ -102,7 +104,9 @@ fse.readdirSync(taDir)
 const entries =
     blocksSpec2Query(
         taContent.map(
-            entry => entryRecord(entry),
+            entry => {
+                return entryRecord(entry);
+            },
         ),
     );
 const pk = new Proskomma();
@@ -112,18 +116,20 @@ const query = `mutation { addDocument(` +
     `contentType: "usfm", ` +
     `content: """\id TA1\n\toc Translation Academy\n\imt Translation Academy\n""") }`;
 pk.gqlQuery(query)
-    .then(result => {
+    .then(() => {
         const query = '{ docSets { documents { id } } }';
         pk.gqlQuery(query)
             .then(result => {
                 const docId = result.data.docSets[0].documents[0].id;
                 const query = `mutation { newSequence(` +
                     ` documentId: "${docId}"` +
-                    ` type: "entries"` +
+                    ` type: "kv"` +
                     ` blocksSpec: ${entries}` +
                     ` graftToMain: true) }`;
-                console.log(query);
                 pk.gqlQuery(query)
-                    .then(result => console.log(JSON.stringify(result, null, 2)));
+                    .then(() => {
+                        const serial = pk.serializeSuccinct('eng_uwta');
+                        console.log(JSON.stringify(serial, null, 2));
+                    });
             });
     });

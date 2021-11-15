@@ -31,7 +31,7 @@
     "fs-extra": "^10.0.0",
     "http-proxy": "1.11.1",
     "path": "^0.12.7",
-    "proskomma": "^0.4.82",
+    "proskomma": "^0.4.88",
     "proxy-from-env": "0.0.1"
   },
   "devDependencies": {
