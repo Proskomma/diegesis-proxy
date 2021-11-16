@@ -16,9 +16,10 @@ const reworkNodeIds = ob => {
 };
 
 if (process.argv.length !== 4) {
-    console.log('USAGE: node rework_low_fat_node_ids.js <inPath> <outPath>');
+    console.log('USAGE: node rework_low_fat_node_ids.js <inPath> <outName>');
+    process.exit(1);
 }
 
 const inJson = fse.readJsonSync(path.resolve(process.argv[2]));
 const outJson = reworkNodeIds(inJson);
-fse.writeJsonSync(path.resolve(process.argv[3]), outJson, {spaces: 2});
+fse.writeJsonSync(path.resolve("..", "sources", "low_fat_nt_trees", "reworked", process.argv[3] + ".json"), outJson, {spaces: 2});
