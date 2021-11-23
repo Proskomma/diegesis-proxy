@@ -1,3 +1,12 @@
+# diegesis-proxy
+A whitelist proxy going-on static content server for [Diegesis](https://github.com/Proskomma/diegesis)
+
+```
+npm install
+node server.js
+```
+
+# CORS-Anywhere Doc
 [![Build Status](https://travis-ci.com/Rob--W/cors-anywhere.svg?branch=master)](https://travis-ci.com/Rob--W/cors-anywhere)
 [![Coverage Status](https://coveralls.io/repos/github/Rob--W/cors-anywhere/badge.svg?branch=master)](https://coveralls.io/github/Rob--W/cors-anywhere?branch=master)
 
