@@ -25,7 +25,8 @@ const importBook = async () => {
         let query = `mutation { addDocument(` +
             `selectors: [{key: "lang", value: "eng"}, {key: "abbr", value: "cblft"}], ` +
             `contentType: "usfm", ` +
-            `content: """\\id ${bookName}\n\\toc Clear.Bible Low Fat Syntax Trees\n\\imt Syntax Trees for ${bookName}\n""") }`;
+            `content: """\\id ${bookName}\n\\toc Clear.Bible Low Fat Syntax Trees\n\\imt Syntax Trees for ${bookName}\n"""` +
+            `tags: ["doctype:tree"]) }`;
         let result = await pk.gqlQuery(query);
         query = `{ docSets { document(bookCode:"${bookName}") { id } } }`;
         result = await pk.gqlQuery(query);
