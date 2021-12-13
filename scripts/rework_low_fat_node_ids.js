@@ -47,7 +47,7 @@ const reworkNodeIds = (ob, cv) => {
         const chapter = parseInt(nodeId.substring(2, 5)).toString();
         const verse = parseInt(nodeId.substring(5, 8)).toString();
         const newCV = `${chapter}:${verse}`;
-        if (newCV !== cv) {
+        if (true || newCV !== cv) {
             ret.content.cv = newCV;
             cv = newCV;
         }
