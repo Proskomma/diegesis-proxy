@@ -32,7 +32,14 @@ const fileNames = [
 
 const reworkNodeIds = (ob, cv) => {
     if (ob.children && ob.children.length === 1) {
-        return reworkNodeIds(ob.children[0], cv);
+        const child = {...ob.children[0]};
+        if (ob.content && ob.content.sentence) {
+            if (!child.content) {
+                child.content = {};
+            }
+            child.content.sentence = ob.content.sentence;
+        }
+        return reworkNodeIds(child, cv);
     }
     const ret = {...ob};
     delete ob.content.role;
@@ -53,13 +60,38 @@ const reworkNodeIds = (ob, cv) => {
     if (ret.children) {
         ret.children = ob.children
             .filter(c => !(c.content.text && !c.content.lemma))
+            .map(
+                c => (
+                    {
+                        ...c,
+                        content: {
+                            ...(c.content || {}),
+                            sentence: (c.content && c.content.sentence) || (ret.content && ret.content.sentence) || ''
+                        }
+                    }
+                ),
+            )
             .map(c => reworkNodeIds(c, cv));
     }
     return ret;
 };
 for (const [inName, outName] of fileNames) {
     console.log(outName);
-    const inJson = fse.readJsonSync(path.resolve('..', 'sources', 'low_fat_nt_trees', 'original', inName + '.json'));
+    let inJson = fse.readJsonSync(path.resolve('..', 'sources', 'low_fat_nt_trees', 'original', inName + '.json'));
+    inJson = {
+        ...inJson,
+        children: inJson.children.map(
+            (c, n) => (
+                {
+                    ...c,
+                    content: {
+                        ...c.content,
+                        sentence: `${n}`,
+                    },
+                }
+            ),
+        ),
+    };
     const outJson = reworkNodeIds(inJson, '', true);
     fse.writeJsonSync(path.resolve('..', 'sources', 'low_fat_nt_trees', 'reworked', outName + '.json'), outJson, {spaces: 2});
 }
