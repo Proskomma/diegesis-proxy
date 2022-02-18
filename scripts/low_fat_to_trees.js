@@ -21,7 +21,6 @@ const pk = new Proskomma();
 const importBook = async () => {
     for (const bookFile of fse.readdirSync(process.argv[2])) {
         const bookName = bookFile.split('.')[0];
-        console.warn(bookName);
         let query = `mutation { addDocument(` +
             `selectors: [{key: "lang", value: "eng"}, {key: "abbr", value: "cblft"}], ` +
             `contentType: "usfm", ` +
